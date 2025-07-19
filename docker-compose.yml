@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abcd@1234
+      POSTGRES_DB: scales_ops
+    ports:
+      - "5433:5432"
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    container_name: backend
+    restart: always
+    env_file:
+      - ./backend/env.dev
+    ports:
+      - 8001:8000
+    expose:
+      - 8000
+    volumes:
+      - "./backend/:/backend/"
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+
+
